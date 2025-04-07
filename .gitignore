@@ -1,0 +1,7 @@
+/build/
+/Debug/
+/Release/
+/.vscode/
+*.exe
+*.obj
+*.log
