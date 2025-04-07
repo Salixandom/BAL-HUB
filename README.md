@@ -20,20 +20,23 @@ It's designed for educational purposes and helps you understand how version cont
 
 ## 📁 Project Structure
 
-BAL/ 
-  ├── include/ # External libraries (e.g., nlohmann/json) 
-  ├── src/ # Source files 
-     ├── add.cpp 
-     ├── commit.cpp 
-     ├── checkout.cpp 
-     ├── log.cpp 
-     ├── init.cpp 
-     ├── main.cpp 
-     └── utils/ 
-         ├── hash_utils.cpp  
-         └── hash_utils.hpp 
-  ├── CMakeLists.txt 
-  └── README.md
+BAL/
+├── include/            # External libraries (e.g., nlohmann/json)
+│   └── nlohmann/
+│       └── json.hpp
+├── src/                # Source files
+│   ├── main.cpp        # CLI argument handler
+│   ├── init.cpp        # Handles 'bal init'
+│   ├── add.cpp         # Handles 'bal add'
+│   ├── commit.cpp      # Handles 'bal commit'
+│   ├── log.cpp         # Handles 'bal log'
+│   ├── checkout.cpp    # Handles 'bal checkout'
+│   └── utils/          # Utility modules
+│       ├── hash_utils.cpp
+│       └── hash_utils.hpp
+├── build/              # (Ignored) Compiled binaries and objects
+├── CMakeLists.txt      # CMake build configuration
+└── README.md           # Project documentation
 
 ---
 
