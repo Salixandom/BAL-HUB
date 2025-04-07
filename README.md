@@ -64,7 +64,7 @@ BAL/
    ./bal add file.txt
    ./bal commit -m "First commit"
    ```
-### 🪟 On Windows: Use .\bal.exe instead of ./bal
+> 🪟 On Windows: Use .\bal.exe instead of ./bal
 
 ## 🧪 Example Usage
   ```bash
@@ -83,8 +83,8 @@ BAL/
 -  Optional compression with zlib
 
 ## 💡 Why I Built This
-I built BAL to deeply understand how Git works internally — from hashing files to managing commits, logs, and restores.
-It was a full-stack C++ challenge and a hands-on way to master file I/O, JSON handling, and CLI tool design.
+> I built BAL to deeply understand how Git works internally — from hashing files to managing commits, logs, and restores.
+> It was a full-stack C++ challenge and a hands-on way to master file I/O, JSON handling, and CLI tool design.
 
 ## 🛡️ Disclaimer
 BAL is meant for educational purposes only and is not intended for production use. It does not handle merge conflicts, branches, or remote repositories (yet!).
