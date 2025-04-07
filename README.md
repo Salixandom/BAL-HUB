@@ -1,4 +1,4 @@
-# BAL — Build A Git (Custom Git Implementation in C++)
+# BAL — Build And Learn (Custom Git Implementation in C++)
 
 BAL is a lightweight version control system built from scratch in C++ to mimic the core functionality of Git.  
 It's designed for educational purposes and helps you understand how version control systems like Git work under the hood.
