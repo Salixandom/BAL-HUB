@@ -16,6 +16,8 @@ void diffCommitToCommit(const string &commitA, const string &commitB);
 void diffCommitToCommitFile(const string &commitA, const string &commitB, const string &filename);
 void removeFromBal(const string &filename, bool cachedOnly);
 void removeRecursive(const string &folder, bool cachedOnly);
+void resetIndex();
+void resetFile(const string &filename);
 
 int main(int argc, char *argv[]){
     
@@ -78,6 +80,12 @@ int main(int argc, char *argv[]){
             removeRecursive(argv[3], false);
         } else if(argc == 5 && string(argv[2]) == "-r" && string(argv[3]) == "--cached") {
             removeRecursive(argv[4], true);
+        }
+    } else if (command == "reset") {
+        if(argc == 3) {
+            resetFile(argv[2]);
+        } else {
+            resetIndex();
         }
     } else {
         cout << "Unrecognized command: " << command << endl;
