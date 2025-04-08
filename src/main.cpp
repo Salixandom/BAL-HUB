@@ -9,9 +9,14 @@ void commit(const string &message);
 void logHistory();
 void checkout(const string &commitID);
 void status();
+void diff(const string &filename);
+void diffWithCommit(const string &commitID, const string &filename);
+void diffWholeCommit(const string &commitID);
+void diffCommitToCommit(const string &commitA, const string &commitB);
+void diffCommitToCommitFile(const string &commitA, const string &commitB, const string &filename);
 
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]){
+    
     if(argc < 2) {
         cout << "Usage: bal <command>" << endl;
         return 1;
@@ -31,6 +36,34 @@ int main(int argc, char* argv[]) {
         checkout(argv[2]);
     } else if(command == "status") {
         status();
+    } else if(command == "diff") {
+        if (argc == 3) {
+            string arg = argv[2];
+            if (arg.rfind("--commit=", 0) == 0) {
+                string commitID = arg.substr(9);
+                diffWholeCommit(commitID);
+            } else {
+                diff(argv[2]);
+            }
+        } else if(argc == 4 && string(argv[2]) == "--commit") {
+            string commitID = argv[3];
+            diffWholeCommit(commitID);
+        } else if (argc == 5 && string(argv[2]) == "--commit") {
+            diffWithCommit(argv[3], argv[4]);
+        } else if (argc == 4) {
+            diffWithCommit(argv[3], argv[2]);
+        } else if (argc == 5 && string(argv[2]) == "--commit" && string(argv[4]) == "--to") {
+            cerr << "Usage: bal diff --commit <idA> --to <idB>" << endl;
+        } else if (argc == 6 && string(argv[2]) == "--commit" && string(argv[4]) == "--to") {
+            diffCommitToCommit(argv[3], argv[5]);
+        } else if (argc == 7 && string(argv[2]) == "--commit" && string(argv[4]) == "--to") {
+            string commitA = argv[3];
+            string commitB = argv[5];
+            string filename = argv[6];
+            diffCommitToCommitFile(commitA, commitB, filename);
+        } else {
+            diff("");
+        }
     } else {
         cout << "Unrecognized command: " << command << endl;
     }
