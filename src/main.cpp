@@ -14,10 +14,11 @@ void diffWithCommit(const string &commitID, const string &filename);
 void diffWholeCommit(const string &commitID);
 void diffCommitToCommit(const string &commitA, const string &commitB);
 void diffCommitToCommitFile(const string &commitA, const string &commitB, const string &filename);
-void removeFromBal(const string &filename, bool cachedOnly);
-void removeRecursive(const string &folder, bool cachedOnly);
+void removeFromBal(const string &filename, bool cachedOnly = false);
+void removeRecursive(const string &folder, bool cachedOnly = false);
 void resetIndex();
 void resetFile(const string &filename);
+void cleanWorkingDir(bool force = false);
 
 int main(int argc, char *argv[]){
     
@@ -87,6 +88,11 @@ int main(int argc, char *argv[]){
         } else {
             resetIndex();
         }
+    } else if(command == "clean") {
+        if(argc == 3 && (string(argv[2]) == "--force" || string(argv[2]) == "--f"))
+            cleanWorkingDir(true);
+        else
+            cleanWorkingDir(false);
     } else {
         cout << "Unrecognized command: " << command << endl;
     }
