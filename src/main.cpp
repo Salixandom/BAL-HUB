@@ -19,6 +19,12 @@ void removeRecursive(const string &folder, bool cachedOnly = false);
 void resetIndex();
 void resetFile(const string &filename);
 void cleanWorkingDir(bool force = false);
+void restoreFromTrash(const string &filename);
+void listTrashFiles();
+void listTrashFilesDetailed();
+void restoreAllFromTrash();
+void restoreFromTrashByVersion(const string &filename, const string &timestamp);
+
 
 int main(int argc, char *argv[]){
     
@@ -93,6 +99,18 @@ int main(int argc, char *argv[]){
             cleanWorkingDir(true);
         else
             cleanWorkingDir(false);
+    } else if(command == "restore") {
+        if(argc == 4 && string(argv[2]) == "--list" && string(argv[3]) == "--detailed") {
+            listTrashFilesDetailed();
+        } else if(argc == 3 && string(argv[2]) == "--list") {
+            listTrashFiles();
+        } else if(argc == 3 && string(argv[2]) == "--all") {
+            restoreAllFromTrash();
+        } else if(argc == 5 && string(argv[3]) == "--version") {
+            restoreFromTrashByVersion(argv[2], argv[4]);
+        } else if(argc == 3) {
+            restoreFromTrash(argv[2]);
+        }
     } else {
         cout << "Unrecognized command: " << command << endl;
     }
