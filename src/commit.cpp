@@ -28,51 +28,59 @@ string getTimeStampID() {
 
 
 void commit(const string &message) {
-    if(!fs::exists(".bal/index.json")) {
+    if (!fs::exists(".bal/index.json")) {
         cerr << "Error: Repository not initialized. Run `bal init` first." << endl;
         return;
     }
 
-    // Load staged files
+    // Load staged index
     ifstream indexFile(".bal/index.json");
     json index;
     indexFile >> index;
     indexFile.close();
 
-    if(index.empty()) {
-        cerr << "Error: Nothing to commit." << endl;
+    if (index.empty()) {
+        cerr << "Warning: Nothing is staged. Nothing to commit." << endl;
         return;
     }
 
-    // Create commit id and folder
+    // Prepare commit ID and folder
     string commitID = getTimeStampID();
-    fs::create_directory(".bal/commits/" + commitID);
+    fs::path commitDir = ".bal/commits/" + commitID;
+    fs::create_directories(commitDir);
 
-    // Copy staged files to commit folder
-    for(auto &[filename, hash] : index.items()) {
-        fs::create_directories(fs::path(".bal/commits/" + commitID).parent_path());  //ensures folder exist
+    // Copy staged files into commit folder
+    int committedCount = 0;
+    for (const auto& [filename, hash] : index.items()) {
+        fs::path srcPath = filename;
+        fs::path destPath = commitDir / srcPath;
 
         try {
-            fs::copy_file(filename, ".bal/commits/" + commitID + "/" + fs::path(filename).filename().string(), fs::copy_options::overwrite_existing);
-        } catch(...) {
-            cerr << "Error: Failed to copy: " << filename << endl;
+            fs::create_directories(destPath.parent_path());  // maintain directory structure
+            fs::copy_file(srcPath, destPath, fs::copy_options::overwrite_existing);
+            cout << "Committed: " << filename << endl;
+            committedCount++;
+        } catch (...) {
+            cerr << "Error: Failed to commit: " << filename << endl;
         }
     }
 
-    // Append commit info to log.json
+    // Load previous log (if exists)
+    json log = json::array();
+    ifstream logFile(".bal/log.json");
+    if (logFile) logFile >> log;
+    logFile.close();
+
+    // Add new log entry
     json logEntry = {
         {"id", commitID},
         {"message", message},
         {"timestamp", commitID},
         {"files", index}
     };
-
-    json log;
-    ifstream logFile(".bal/log.json");
-    logFile >> log;
-    logFile.close();
-
     log.push_back(logEntry);
+
+    // Write updated log
     ofstream logOut(".bal/log.json");
     logOut << log.dump(4);
     logOut.close();
@@ -82,6 +90,105 @@ void commit(const string &message) {
     indexOut << "{}";
     indexOut.close();
 
-    cout << "Committed as " << commitID << " with message: " << message <<endl;
+    cout << "\nCommit complete: " << committedCount << " file(s) saved as " << commitID << endl;
+    cout << "Message: " << message << endl;
 }
 
+
+void amendCommit(const string &newMessage) {
+    if (!fs::exists(".bal/log.json")) {
+        cerr << "Error: No commits found to amend." << endl;
+        return;
+    }
+
+    json log;
+    ifstream in(".bal/log.json");
+    in >> log;
+    in.close();
+
+    if (log.empty()) {
+        cerr << "Error: Commit log is empty." << endl;
+        return;
+    }
+
+    // Amend the last commit message
+    log.back()["message"] = newMessage;
+
+    ofstream out(".bal/log.json");
+    out << log.dump(4);
+    out.close();
+
+    cout << "Commit message updated for latest commit (" << log.back()["id"] << ")\n";
+    cout << "New message: " << newMessage << endl;
+}
+
+
+void amendCommitFiles() {
+    // Check repo and staging area
+    if (!fs::exists(".bal/index.json") || !fs::exists(".bal/log.json")) {
+        cerr << "Error: Repository not initialized or no commits exist." << endl;
+        return;
+    }
+
+    // Load staged files
+    json index;
+    ifstream indexIn(".bal/index.json");
+    indexIn >> index;
+    indexIn.close();
+
+    if (index.empty()) {
+        cerr << "Warning: Nothing is staged. Nothing to update." << endl;
+        return;
+    }
+
+    // Load commit log
+    json log;
+    ifstream logIn(".bal/log.json");
+    logIn >> log;
+    logIn.close();
+
+    if (log.empty()) {
+        cerr << "Error: Commit log is empty." << endl;
+        return;
+    }
+
+    // Get latest commit
+    json& lastCommit = log.back();
+    string commitID = lastCommit["id"];
+    fs::path commitDir = ".bal/commits/" + commitID;
+
+    if (!fs::exists(commitDir)) {
+        cerr << "Error: Commit directory does not exist for ID " << commitID << endl;
+        return;
+    }
+
+    // Overwrite files in commit folder
+    int updated = 0;
+    for (const auto& [filename, hash] : index.items()) {
+        fs::path srcPath = filename;
+        fs::path destPath = commitDir / srcPath;
+
+        try {
+            fs::create_directories(destPath.parent_path());
+            fs::copy_file(srcPath, destPath, fs::copy_options::overwrite_existing);
+            cout << "Updated: " << filename << endl;
+            updated++;
+        } catch (...) {
+            cerr << "Error: Could not update " << filename << endl;
+        }
+    }
+
+    // Update files in commit log
+    lastCommit["files"] = index;
+
+    ofstream logOut(".bal/log.json");
+    logOut << log.dump(4);
+    logOut.close();
+
+    // Clear staging
+    ofstream indexOut(".bal/index.json");
+    indexOut << "{}";
+    indexOut.close();
+
+    cout << "\nCommit updated (" << commitID << "): " << updated << " file(s) replaced.\n";
+}

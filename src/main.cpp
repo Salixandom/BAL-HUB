@@ -6,6 +6,8 @@ using namespace std;
 void init();
 void add(const string &filename);
 void commit(const string &message);
+void amendCommit(const string &newMessage);
+void amendCommitFiles();
 void logHistory();
 void checkout(const string &commitID);
 void status();
@@ -45,6 +47,10 @@ int main(int argc, char *argv[]){
         else add(arg);
     } else if(command == "commit" && argc == 4 && string(argv[2]) == "-m") {
         commit(argv[3]);
+    } else if(command == "commit" && argc == 4 && string(argv[2]) == "--amend") {
+        amendCommit(argv[3]); 
+    } else if (command == "commit" && argc == 3 && string(argv[2]) == "--amend-files") {
+        amendCommitFiles();
     } else if(command == "log") {
         logHistory();
     } else if(command == "checkout" && argc == 3) {
