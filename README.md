@@ -9,12 +9,45 @@ It's designed for educational purposes and helps you understand how version cont
 
 ## 🧠 Features Implemented
 
+### 🔨 Core Commands
 - ✅ `init` – Initialize a new BAL repository
 - ✅ `add <file>` – Stage individual files
-- ✅ `add .` – Stage all files recursively
+- ✅ `add .` / `add --all` – Stage all files recursively
 - ✅ `commit -m "msg"` – Save a snapshot with a message
-- ✅ `log` – View commit history
+- ✅ `commit --amend` – Edit the last commit message
+- ✅ `commit --amend-files` – Update files in the last commit
+- ✅ `log` – View commit history with file count
 - ✅ `checkout <commit_id>` – Restore files from a previous commit
+
+### 🧼 File Management
+- ✅ `reset` – Unstage all files
+- ✅ `reset <file>` – Unstage specific file
+- ✅ `rm <file>` – Unstage and delete file (move to trash)
+- ✅ `rm -r <dir>` – Recursively unstage and trash folder
+- ✅ `rm --cached` – Only unstage, keep file
+- ✅ `.balignore` – Ignore patterns for staging and cleaning
+
+### 🔁 Diff & Compare
+- ✅ `diff <file>` – Compare working vs staged
+- ✅ `diff --commit <id>` – Compare working vs a commit
+- ✅ `diff <file> <commit>` – Compare file vs commit
+- ✅ `diff --commit A --to B` – Compare full commits
+- ✅ Color-coded diff with line numbers
+
+### 🗑️ Trash System
+- ✅ Files are moved to `.bal/trash/` instead of deleted
+- ✅ `restore <file>` – Restore most recent version
+- ✅ `restore <file> --version <timestamp>` – Restore specific version
+- ✅ `restore --list` – Show files in trash
+- ✅ `restore --list --detailed` – Show all timestamped versions
+- ✅ `restore --all` – Restore all trashed files
+- ✅ `trash --list` – Alias for listing trash
+- ✅ `trash --clean` – Empty the trash folder
+
+### 🧹 Cleaning
+- ✅ `clean` – Remove all untracked files (with confirmation)
+- ✅ `clean --force` – Remove untracked files without prompt
+
 
 ---
 
@@ -31,8 +64,17 @@ BAL/
 │   ├── commit.cpp      # Handles 'bal commit'
 │   ├── log.cpp         # Handles 'bal log'
 │   ├── checkout.cpp    # Handles 'bal checkout'
+│   ├── clean.cpp       # Handles 'bal clean'
+│   ├── diff.cpp        # Handles 'bal diff'
+│   ├── reset.cpp       # Handles 'bal reset'
+│   ├── restore.cpp     # Handles 'bal restore'
+│   ├── rm.cpp          # Handles 'bal rm'
+│   ├── status.cpp      # Handles 'bal status'
+│   ├── trash.cpp       # Handles 'bal trash'
 │   └── utils/          # Utility modules
 │       ├── hash_utils.cpp
+│       ├── file_utils.cpp
+│       ├── file_utils.hpp
 │       └── hash_utils.hpp
 ├── build/              # (Ignored) Compiled binaries and objects
 ├── CMakeLists.txt      # CMake build configuration
@@ -72,15 +114,18 @@ BAL/
   bal add <file name>
   bal commit -m "Initial commit"
   bal log
+  bal diff <file name>
   bal checkout <commitID from log>
+  bal rm -r src/
+  bal restore <file name> --version <commit id>
   ```
 
 ## 📦 Planned Features (Coming Soon)
--  status command
--  .balignore support
--  File/directory diff viewer
--  Branching system
--  Optional compression with zlib
+-  Branching system (checkout -b, merge)
+-  Interactive rebase or commit squash
+-  Basic remote support (push/pull via HTTP)
+-  Compression with zlib for internal files
+-  More user-friendly status and color themes
 
 ## 💡 Why I Built This
 > I built BAL to deeply understand how Git works internally — from hashing files to managing commits, logs, and restores.
