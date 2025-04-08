@@ -8,6 +8,7 @@ void add(const string &filename);
 void commit(const string &message);
 void logHistory();
 void checkout(const string &commitID);
+void status();
 
 
 int main(int argc, char* argv[]) {
@@ -28,6 +29,8 @@ int main(int argc, char* argv[]) {
         logHistory();
     } else if(command == "checkout" && argc == 3) {
         checkout(argv[2]);
+    } else if(command == "status") {
+        status();
     } else {
         cout << "Unrecognized command: " << command << endl;
     }
