@@ -40,25 +40,17 @@ void status() {
         }
     }
 
-    for(const auto &entry: fs::recursive_directory_iterator(".")) {
-        if(!entry.is_regular_file()) continue;
+    vector<string> allFiles = getAllFiles(".", ignorePatterns);
 
-        string path = entry.path().string();
-
-        if(path.find(".bal/") == 0 || path.find("/.bal") != string::npos) continue;
-
-        if(entry.path().filename().string()[0] == '.') continue;
-
-        if(isIgnored(path, ignorePatterns)) continue;
-
-        if(stagedFiles.find(path) == stagedFiles.end()) {
-            untrackedFiles.insert(path);
+    for (const auto &file : allFiles) {
+        if (stagedFiles.find(file) == stagedFiles.end()) {
+            untrackedFiles.insert(file);
         }
     }
 
     cout << "\n=== Staged Files ===\n";
     for (const auto &file : stagedFiles) {
-        if (modifiedFiles.find(file) == modifiedFiles.end())
+        if (modifiedFiles.find(file) == modifiedFiles.end() && deletedFiles.find(file) == deletedFiles.end())
             cout << "  - " << file << endl;
     }
 

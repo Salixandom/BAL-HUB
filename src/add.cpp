@@ -8,9 +8,10 @@
 
 using json = nlohmann::json;
 using namespace std;
+namespace fs = std::filesystem;
 
 void add(const string &filename) {
-    if (!filesystem::exists(".bal")){
+    if (!fs::exists(".bal")){
         cout << "Error: Repository not initialized. Run `bal init` first." << endl;
         return;
     }
@@ -24,26 +25,18 @@ void add(const string &filename) {
     vector<string> filesToAdd;
     
     if(filename == "."){
-        for(const auto &entry: filesystem::recursive_directory_iterator(".")) {
-            if(!entry.is_regular_file()) continue;
-
-            string fullPath = entry.path().string();
-            if(fullPath.find(".bal/") == 0 || fullPath.find("/.bal") != string::npos)   // check if .bal is the first/root directory and also checks if .bal is found  // npos means not found
-                continue;
-
-            if(entry.path().filename().string()[0] == '.') continue;  // skip hidden files
-
-            if (isIgnored(fullPath, ignorePatterns)) continue;
-
-            filesToAdd.push_back(fullPath);
+        for(const auto &entry: fs::recursive_directory_iterator(".")) {
+            filesToAdd = getAllFiles(".", ignorePatterns); 
         }
     } else {
-        if(!filesystem::exists(filename) || !filesystem::is_regular_file(filename)) {
+        if(!fs::exists(filename) || !fs::is_regular_file(filename)) {
             cerr << "Error: File '" << filename << "' does not exist or is not a regular file." << endl;
             return;
         }
 
-        filesToAdd.push_back(filename);
+        if(!isIgnored(filename, ignorePatterns) && !isHiddenFile(fs::path(filename).filename().string()) && !isInsideBal(filename)) {
+            filesToAdd.push_back(filename);
+        }
     }
 
     for(const string &file : filesToAdd) {

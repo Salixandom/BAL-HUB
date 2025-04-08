@@ -75,6 +75,7 @@ void commit(const string &message) {
     log.push_back(logEntry);
     ofstream logOut(".bal/log.json");
     logOut << log.dump(4);
+    logOut.close();
 
     // Clear staging area
     ofstream indexOut(".bal/index.json");

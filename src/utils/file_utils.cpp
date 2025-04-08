@@ -36,3 +36,29 @@ bool isIgnored(const string &path, vector<string> &patterns) {
     }
     return false;
 }
+
+
+bool isHiddenFile(const string &filename) {
+    return !filename.empty() && filename[0] == '.';
+}
+
+bool isInsideBal(const string &path) {
+    return path.find(".bal/") == 0 || path.find("/.bal") != string::npos;
+}
+
+
+vector<string> getAllFiles(const string &rootDir, vector<string> &ignorePatterns) {
+    vector<string> result;
+
+    for(const auto &entry : fs::recursive_directory_iterator(rootDir)) {
+        if(!entry.is_regular_file()) continue;  // skip non-regular files (e.g. directories, symlinks, etc.)
+
+        string path = entry.path().string();
+
+        if(isInsideBal(path)) continue;  // skip files inside .bal folder
+        if(isHiddenFile(entry.path().filename().string())) continue;  // skip hidden files
+        if(isIgnored(path, ignorePatterns)) continue;  // skip ignored files
+
+        result.push_back(path);
+    }
+}

@@ -15,6 +15,7 @@ void logHistory() {
 
     json log;
     logFile >> log;
+    logFile.close();
     
     if(log.empty()) {
         cerr << "No commit history found" << endl;
@@ -24,9 +25,11 @@ void logHistory() {
     cout << "\n=== Commit History ===\n" << endl;
 
     for(auto it = log.rbegin(); it != log.rend(); ++it) {
-        cout << "Commit ID: " << (*it)["id"] << endl;
-        cout << "Timestamp: " << (*it)["timestamp"] << endl;
-        cout << "Message: " << (*it)["message"] << endl;
-        cout << "--------------------------" << endl;
+        cout << "Commit ID  : " << (*it)["id"] << endl;
+        cout << "Timestamp  : " << (*it)["timestamp"] << endl;
+        cout << "Message    : " << (*it)["message"] << endl;
+        cout << "-------------------------------" << endl;
     }
+
+    cout << endl;
 }
