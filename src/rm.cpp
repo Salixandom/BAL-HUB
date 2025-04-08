@@ -2,6 +2,7 @@
 #include <fstream>
 #include <filesystem>
 #include "nlohmann/json.hpp"
+#include "file_utils.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -33,8 +34,9 @@ void removeFromBal(const string &filename, bool cachedOnly = false) {
     cout << "Unstaged: " << filename << endl;
 
     if(!cachedOnly && fs::exists(filename)) {
-        fs::remove(filename);
-        cout << "Deleted: " << filename << endl;
+        if(moveToTrash(filename)) {
+            cout << "Moved to trash: " << filename << endl;
+        }
     }
 }
 
@@ -68,9 +70,10 @@ void removeRecursive(const string &folder, bool cachedOnly = false) {
             cout << "Unstaged: " << path << endl;
             removed++;
 
-            if (!cachedOnly) {
-                fs::remove(path);
-                cout << "Deleted: " << path << endl;
+            if (!cachedOnly && fs::exists(path)) {
+                if(moveToTrash(path)) {
+                    cout << "Moved to trash: " << path << endl;
+                }
             }
         }
     }

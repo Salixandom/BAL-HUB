@@ -1,6 +1,8 @@
 #include <fstream>
 #include <filesystem>
 #include <regex>
+#include <chrono>
+#include <sstream>
 #include "file_utils.hpp"
 
 namespace fs = std::filesystem;
@@ -102,4 +104,38 @@ vector<string> matchGlobPattern(const string &pattern, vector<string> &ignorePat
     }
 
     return matched;
+}
+
+string getTimeSuffix() {
+    auto now = chrono::system_clock::now();
+    auto in_time = chrono::system_clock::to_time_t(now);
+    std::tm buf;
+
+#ifdef _WIN32
+    localtime_s(&buf, &in_time);
+#else
+    localtime_r(&in_time, &buf);
+#endif
+
+    stringstream ss;
+    ss << "_" << std::put_time(&buf, "%Y%m%d%H%M%S");
+    return ss.str();
+}
+
+bool moveToTrash(const string &filepath) {
+    try {
+        fs::create_directories(".bal/trash");
+
+        string filename = fs::path(filepath).filename().string();
+        string extension = fs::path(filename).extension().string();
+        string base = fs::path(filename).stem().string();
+
+        string timestamped = base + getTimeSuffix() + extension;
+        string trashPath = ".bal/trash/" + timestamped;
+
+        fs::rename(filepath, trashPath);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
