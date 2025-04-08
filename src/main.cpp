@@ -14,6 +14,8 @@ void diffWithCommit(const string &commitID, const string &filename);
 void diffWholeCommit(const string &commitID);
 void diffCommitToCommit(const string &commitA, const string &commitB);
 void diffCommitToCommitFile(const string &commitA, const string &commitB, const string &filename);
+void removeFromBal(const string &filename, bool cachedOnly);
+void removeRecursive(const string &folder, bool cachedOnly);
 
 int main(int argc, char *argv[]){
     
@@ -26,8 +28,11 @@ int main(int argc, char *argv[]){
 
     if(command == "init") {
         init();
-    } else if(command == "add" && argc == 3) {
-        add(argv[2]);
+    } else if (command == "add" && argc == 3) {
+        string arg = argv[2];
+
+        if (arg == "--all" || arg == "-A") add(".");
+        else add(arg);
     } else if(command == "commit" && argc == 4 && string(argv[2]) == "-m") {
         commit(argv[3]);
     } else if(command == "log") {
@@ -63,6 +68,16 @@ int main(int argc, char *argv[]){
             diffCommitToCommitFile(commitA, commitB, filename);
         } else {
             diff("");
+        }
+    } else if(command == "rm") {
+        if(argc == 3) {
+            removeFromBal(argv[2], false);
+        } else if(argc == 4 && string(argv[2]) == "--cached") {
+            removeFromBal(argv[3], true);
+        } else if(argc == 4 && string(argv[2]) == "-r") {
+            removeRecursive(argv[3], false);
+        } else if(argc == 5 && string(argv[2]) == "-r" && string(argv[3]) == "--cached") {
+            removeRecursive(argv[4], true);
         }
     } else {
         cout << "Unrecognized command: " << command << endl;

@@ -28,6 +28,15 @@ void add(const string &filename) {
         for(const auto &entry: fs::recursive_directory_iterator(".")) {
             filesToAdd = getAllFiles(".", ignorePatterns); 
         }
+    } else if(filename.find('*') != string::npos || filename.find('?') != string::npos) {
+        filesToAdd = matchGlobPattern(filename, ignorePatterns);
+        if(filesToAdd.empty()) {
+            cout << "No files matched pattern " << filename << endl;
+            return;
+        }
+    } else if(fs::is_directory(filename)) {
+        vector<string> dirFiles = getAllFiles(filename, ignorePatterns);
+        filesToAdd.insert(filesToAdd.end(), dirFiles.begin(), dirFiles.end());
     } else {
         if(!fs::exists(filename) || !fs::is_regular_file(filename)) {
             cerr << "Error: File '" << filename << "' does not exist or is not a regular file." << endl;
@@ -40,11 +49,15 @@ void add(const string &filename) {
     }
 
     for(const string &file : filesToAdd) {
-        string hash = getFileHash(file);
-        if(!hash.empty()) {
-            index[file] = hash;
-            cout << "Staged: " << file << endl;
+        string newHash = getFileHash(file);
+
+        if (index.contains(file) && index[file] == newHash) {
+            cout << "Skipped: " << file << " (no changes)" << endl;
+            continue;
         }
+
+        index[file] = newHash;
+        cout << "Staged: " << file << endl;
     }
 
     ofstream out(".bal/index.json");

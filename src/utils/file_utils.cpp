@@ -62,3 +62,44 @@ vector<string> getAllFiles(const string &rootDir, vector<string> &ignorePatterns
         result.push_back(path);
     }
 }
+
+string globToRegex(const string &pattern) {
+    string regex = "^";
+    for(char c : pattern) {
+        switch (c) {
+        case '*':
+            regex += ".*";
+            break;
+        case '?':
+            regex += ".";
+            break;
+        case '.':
+            regex += "\\.";
+            break;
+        default:
+            regex += c;
+        }
+    }
+    regex += "$";
+    return regex;
+}
+
+
+vector<string> matchGlobPattern(const string &pattern, vector<string> &ignorePatterns) {
+    vector<string> matched;
+    regex matcher(globToRegex(pattern));
+
+    for(const auto &entry: fs::recursive_directory_iterator(".")) {
+        if(!entry.is_regular_file()) continue;
+
+        string path = entry.path().string();
+        if(isInsideBal(path) || isHiddenFile(entry.path().filename().string()) || isIgnored(path, ignorePatterns)) continue;
+
+        string relative = fs::relative(path, ".").string();
+        if(regex_match(relative, matcher)) {
+            matched.push_back(relative);
+        }
+    }
+
+    return matched;
+}

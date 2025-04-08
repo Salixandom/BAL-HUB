@@ -16,3 +16,5 @@ vector<string> getAllFiles(const string &rootDir, vector<string> &ignorePatterns
 // path checks
 bool isHiddenFile(const string &filename);
 bool isInsideBal(const string &path);
+
+vector<string> matchGlobPattern(const string &pattern, vector<string> &ignorePatterns);
