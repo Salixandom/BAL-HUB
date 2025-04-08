@@ -49,6 +49,8 @@ It's designed for educational purposes and helps you understand how version cont
 - ✅ `clean --force` – Remove untracked files without prompt
 
 
+### Use `bal --help` to see the available commands
+
 ---
 
 ## 📁 Project Structure

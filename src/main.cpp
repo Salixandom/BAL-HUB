@@ -27,6 +27,7 @@ void listTrashFilesDetailed();
 void restoreAllFromTrash();
 void restoreFromTrashByVersion(const string &filename, const string &timestamp);
 void cleanTrash();
+void printHelp();
 
 
 int main(int argc, char *argv[]){
@@ -124,8 +125,11 @@ int main(int argc, char *argv[]){
         } else if(argc == 3 && string(argv[2]) == "--list") {
             listTrashFiles();
         }
+    } else if (argc == 2 && string(argv[1]) == "--help") {
+        printHelp();
     } else {
         cout << "Unrecognized command: " << command << endl;
+        cout << "Use 'bal --help' to see the available commands" << endl;
     }
 
     return 0;
