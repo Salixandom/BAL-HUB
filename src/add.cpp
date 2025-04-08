@@ -4,6 +4,7 @@
 #include <vector>
 #include "nlohmann/json.hpp"
 #include "hash_utils.hpp"
+#include "file_utils.hpp"
 
 using json = nlohmann::json;
 using namespace std;
@@ -19,6 +20,7 @@ void add(const string &filename) {
     file >> index;    // reads the JSON data from the file
     file.close();
 
+    vector<string> ignorePatterns = loadIgnorePatterns();
     vector<string> filesToAdd;
     
     if(filename == "."){
@@ -30,6 +32,8 @@ void add(const string &filename) {
                 continue;
 
             if(entry.path().filename().string()[0] == '.') continue;  // skip hidden files
+
+            if (isIgnored(fullPath, ignorePatterns)) continue;
 
             filesToAdd.push_back(fullPath);
         }
