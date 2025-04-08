@@ -24,6 +24,7 @@ void listTrashFiles();
 void listTrashFilesDetailed();
 void restoreAllFromTrash();
 void restoreFromTrashByVersion(const string &filename, const string &timestamp);
+void cleanTrash();
 
 
 int main(int argc, char *argv[]){
@@ -110,6 +111,12 @@ int main(int argc, char *argv[]){
             restoreFromTrashByVersion(argv[2], argv[4]);
         } else if(argc == 3) {
             restoreFromTrash(argv[2]);
+        }
+    } else if (command == "trash") {
+        if (argc == 3 && string(argv[2]) == "--clean") {
+            cleanTrash();
+        } else if(argc == 3 && string(argv[2]) == "--list") {
+            listTrashFiles();
         }
     } else {
         cout << "Unrecognized command: " << command << endl;
